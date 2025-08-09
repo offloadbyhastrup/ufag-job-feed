@@ -5,35 +5,82 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>UFAG Job Feed</title>
   <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 2rem; }
-    code, pre { background: #f6f8fa; padding: .5rem; border-radius: 6px; display: block; overflow-x: auto; }
-    .pill { display:inline-block; padding:.1rem .5rem; border:1px solid #e2e8f0; border-radius:999px; margin-left:.25rem; font-size:.8rem; }
-    table { border-collapse: collapse; width: 100%; margin-top: 1rem;}
-    th, td { border: 1px solid #e2e8f0; padding: .5rem; text-align: left; }
-    th { background: #f8fafc; }
+    body {
+      font-family: system-ui, sans-serif;
+      margin: 2rem;
+    }
+    code, pre {
+      background: #f6f8fa;
+      padding: .5rem;
+      border-radius: 6px;
+      display: block;
+      overflow-x: auto;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 1rem;
+    }
+    th, td {
+      border: 1px solid #e2e8f0;
+      padding: .5rem;
+      text-align: left;
+    }
+    th {
+      background: #f8fafc;
+    }
   </style>
 </head>
 <body>
   <h1>UFAG Job Feed</h1>
-  <p>Denne side hoster <code>ufag_jobs.json</code> til brug i din app. Brug denne URL som <strong>FEED_URL</strong> i frontend’en:</p>
-  <pre><code id="url"></code></pre>
+
+  <p>Denne side hoster <code>ufag_jobs.json</code> til brug i din app.  
+  Brug denne URL som <strong>FEED_URL</strong> i frontend'en:</p>
+
+  <pre><code id="feedurl">https://offloadbyhastrup.github.io/ufag-job-feed/ufag_jobs.json</code></pre>
+
   <p>Live preview (de første 50 rækker):</p>
-  <table id="tbl"><thead><tr><th>title</th><th>company</th><th>location</th><th>source</th><th>posted_at</th><th>link</th></tr></thead><tbody></tbody></table>
+  <table id="tbl">
+    <thead>
+      <tr>
+        <th>title</th>
+        <th>company</th>
+        <th>location</th>
+        <th>source</th>
+        <th>posted_at</th>
+        <th>notes</th>
+        <th>link</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
   <script>
-    const jsonUrl = new URL('ufag_jobs.json', location.href).href;
-    document.getElementById('url').textContent = jsonUrl;
-    fetch('ufag_jobs.json', {cache:'no-store'})
-      .then(r=>r.json()).then(rows=>{
-        const tbody = document.querySelector('#tbl tbody');
-        (rows||[]).slice(0,50).forEach(j=>{
-          const tr = document.createElement('tr');
-          tr.innerHTML = `<td>${j.title||''}</td><td>${j.company||''}</td><td>${j.location||''}</td><td>${j.source||''}</td><td>${j.posted_at||''}</td><td>${j.url?`<a href="${j.url}" target="_blank" rel="noopener">Åbn</a>`:''}</td>`;
+    const jsonUrl = "https://offloadbyhastrup.github.io/ufag-job-feed/ufag_jobs.json";
+    document.getElementById("feedurl").textContent = jsonUrl;
+
+    fetch(jsonUrl, { cache: "no-store" })
+      .then(r => r.json())
+      .then(rows => {
+        const tbody = document.querySelector("#tbl tbody");
+        rows.slice(0, 50).forEach(j => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${j.title || ""}</td>
+            <td>${j.company || ""}</td>
+            <td>${j.location || ""}</td>
+            <td>${j.source || ""}</td>
+            <td>${j.posted_at || ""}</td>
+            <td>${j.notes || ""}</td>
+            <td><a href="${j.url}" target="_blank">Åbn</a></td>
+          `;
           tbody.appendChild(tr);
         });
-      }).catch(e=>{
-        const tbody = document.querySelector('#tbl tbody');
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td colspan="6">Kunne ikke hente JSON: ${e}</td>`;
+      })
+      .catch(e => {
+        const tbody = document.querySelector("#tbl tbody");
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="7">Kunne ikke hente JSON: ${e}</td>`;
         tbody.appendChild(tr);
       });
   </script>
